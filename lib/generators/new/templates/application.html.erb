@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%= csrf_meta_tags %>
+    <title><%= title %></title>
+    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : "Vamo" %>">
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+    
+  </head>
+  <body class="<%= (request.path == root_path)? 'bs-docs-home' : nil %>">
+
+    <%= render 'layouts/navigation' %>
+    <%= render 'layouts/messages' %>
+    <!-- Banner No Top com informaçoes da página -->
+    <div class= "<%= (request.path == root_path)? 'bs-masthead' : 'bs-header' %>"  id="content">
+      <div class="container">
+        <%= yield :top %>
+      </div>
+    </div>
+    <% if request.path != root_path %>
+      <main role="main">
+        <!-- corpo do site -->
+        <div class="container bs-docs-container">
+          <div class="row">
+            <%= yield :sidebar %>
+            <%= yield :bottom %>
+            <%= yield %>
+          </div>
+        </div>
+      </main>
+    <% end %>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+<header class="navbar navbar-inverse navbar-static-top bs-docs-nav" id="top" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <%= link_to "Website Title", root_path, class: "navbar-brand" %>
+    </div>
+    <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation" >
+      <ul class="nav navbar-nav">
+        <%= render 'layouts/navigation_links' %>
+      </ul>
+      <% if user_signed_in? %>
+      <ul class="nav navbar-nav pull-right">
+        <li><a href="#">Logged in as <strong><%= current_user.name %></strong></a></li>
+      </ul>
+      <% end %>
+    </nav>
+  </div>
+</header>

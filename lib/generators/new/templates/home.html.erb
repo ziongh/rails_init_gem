@@ -1,0 +1,12 @@
+<%- content_for :top do -%>
+	<h1><%= t "website_title" %></h1>
+	<h2><%= t "welcome" %></h2>
+	</br>
+	<p class="lead">
+	<%= t "lead" %>
+	</p>
+	<% if can? :edit, current_user %>
+	  <%= link_to "Edit", edit_user_registration_path %>
+	<% end %>
+	
+<%- end -%>

@@ -1,0 +1,17 @@
+development:
+  adapter: sqlite3
+  encoding: utf8
+  database: db/development.sqlite3
+  pool: 5
+  timeout: 5000
+production:
+  adapter: postgresql
+  encoding: utf8
+  database: Ww_production
+  username: "EXAMPLE_USERNAME"
+  pool: 5
+test:
+  adapter: sqlite3
+  database: db/test.sqlite3
+  pool: 5
+  timeout: 5000

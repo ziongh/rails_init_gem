@@ -1,0 +1,29 @@
+<%- content_for :top do -%>
+	<h1>About</h1>
+	<p>About us</p>
+<%- end -%>
+
+<%- content_for :sidebar do -%>
+	<div class="col-md-3">
+		<div class="bs-sidebar hidden-print" role="complementary">
+			<ul class="nav bs-sidenav">
+				<li><%= link_to "Home", root_path, class: 'button' %></li>
+				<li><%= link_to "Help", help_path, class: 'button' %></li>
+				<li><%= link_to "Contact", contact_path, class: 'button' %></li>
+				<li><%= link_to "About", about_path, class: 'button' %></li>
+			</ul>
+		</div>
+	</div>
+<%- end -%>
+
+<%- content_for :bottom do -%>
+	<div class="col-md-9" role="main">
+		<div class="bs-docs-section">
+			<div class="page-header">
+				<h1 id="js-overview">Overview</h1>
+			</div>
+			<p>blablabla</p>
+		</div>
+	</div>
+<%- end -%>
+
