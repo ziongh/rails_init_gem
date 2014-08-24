@@ -7,6 +7,7 @@ class NewGenerator < Rails::Generators::Base
   def gemfile_update
     project_name = Rails.application.class.parent_name
     project_path = Rails.root
+    project_user = ENV['USER']
 
     
 # --------------------------------------------
@@ -174,8 +175,9 @@ class NewGenerator < Rails::Generators::Base
     copy_file "unicorn.rb", "config/unicorn.rb"
     gsub_file("config/unicorn.rb", "Ww", project_name)
     gsub_file("config/unicorn.rb", "root = \"/home/ziongh/railsProjects/current/ww\"", "root = \"#{project_path}\"")
-    copy_file "unicorn_init.sh.erb", "config/unicorn_init.sh.erb"
-    # gsub_file("config/unicorn_init.sh.erb", "APP_ROOT=\"/home/ziongh/railsProjects/current/ww\"", "APP_ROOT=\"#{project_path}\"" )
+    copy_file "unicorn_init.sh", "config/unicorn_init.sh"
+    gsub_file("config/unicorn_init.sh", "APP_ROOT=\"/home/EXAMPLE_USER/railsProjects/current/ww\"", "APP_ROOT=\"#{project_path}\"" )
+    gsub_file("config/unicorn_init.sh", "AS_USER=EXAMPLE_USER", "AS_USER=\"#{project_user}\"" )
     
  # --------------------------------------------   
     inject_into_file "app/assets/stylesheets/application.css.scss", "\n *= require bootstrap

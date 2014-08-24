@@ -12,11 +12,10 @@ set -e
 
 # Feel free to change any of the following variables for your app:
 TIMEOUT=${TIMEOUT-60}
-APP_ROOT=<%= current_path %>
+APP_ROOT="/home/EXAMPLE_USER/railsProjects/current/ww"
 PID=$APP_ROOT/tmp/pids/unicorn.pid
-CMD="cd $APP_ROOT;  bundle exec unicorn -p 3000 -D -c <%= "#{shared_path}/config/unicorn.rb" %> -E <%= fetch(:rails_env) %>"
-
-AS_USER=<%= fetch(:deploy_user) %>
+CMD="cd $APP_ROOT; bundle exec unicorn -p 3000 -D -c $APP_ROOT/config/unicorn.rb -E production"
+AS_USER=EXAMPLE_USER
 set -u
 
 OLD_PIN="$PID.oldbin"
