@@ -341,8 +341,8 @@ protected
     inject_into_file "app/models/user.rb","\nextend FriendlyId
   friendly_id :name, use: :slugged
 ", after: "ActiveRecord::Base"
-    gsub_file("config/initializers/devise.rb","config.mailer_sender","# config.mailer_sender")
-    inject_into_file "app/models/user.rb","\n    config.mailer_sender = 'info@#{project_name}.com'", after: "ActiveRecord::Base"
+    gsub_file("config/initializers/devise.rb","# config.mailer_sender = 'please-change-me-at-config-initializers-devise@example.com'","config.mailer_sender = 'info@#{project_name}.com'")
+    #inject_into_file "app/models/user.rb","\n    config.mailer_sender = 'info@#{project_name}.com'", after: "ActiveRecord::Base"
 
 # --------------------------------------------
     
