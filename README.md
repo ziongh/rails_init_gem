@@ -38,6 +38,10 @@ Or install it yourself as:
 
 	$ rails g NewProject
 
+Another Option is to execute the railsNew.sh shell script, which will do the steps mention above
+
+	$ ./railsNew.sh NAME_OF_THE_PROJECT
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/rails_init_gem/fork )
