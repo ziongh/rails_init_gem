@@ -1,7 +1,7 @@
 # RailsInitGem: A Gem to Integrate them All
 [![Gem Version](https://badge.fury.io/rb/rails_init_gem.png)](http://badge.fury.io/rb/rails_init_gem)
 
-The idea of this Gem id to Create a functioning Rails Project integrating lots of different Gems in such a way, that the resulting Project can be used in any Production Project. This version is the first one, and probably has some Bugs. I hope people will Help me to Keep this Updated.
+The idea of this Gem is to Create a functioning Rails Project integrating lots of different Gems in such a way, that the resulting Project can be used in any Production Project. This version is the first one, and probably has some Bugs. I hope people will Help me to Keep this Updated.
 
 This gem create a initial application with:
 
@@ -39,7 +39,7 @@ Or install it yourself as:
 
 ## Usage
 
-	$ rails g NewProject
+	$ rails g new
 
 Another Option is to execute the railsNew.sh shell script, which will do the steps mention above
 

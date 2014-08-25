@@ -8,7 +8,8 @@ source 'https://rubygems.org'
 # Basic needs
 gem 'rails'
 gem "pg"
-gem 'rails_init_gem', '0.0.5'
+gem 'sqlite3'
+gem 'rails_init_gem'
 gem 'sass-rails'
 gem 'coffee-rails'
 gem 'jbuilder'

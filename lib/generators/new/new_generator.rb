@@ -19,7 +19,8 @@ class NewGenerator < Rails::Generators::Base
         # Basic needs
         gem 'rails'
         gem "pg"
-        gem 'RailsInitializerGem'
+        gem 'sqlite3'
+        gem 'rails_init_gem'
         gem 'sass-rails'
         gem 'coffee-rails'
         gem 'jbuilder'
@@ -118,60 +119,109 @@ class NewGenerator < Rails::Generators::Base
       run "bundle install"
     end
 # --------------------------------------------
+
+    # Drop Database
     rake("db:drop")
     rake("db:create")
+
+    # Install Annotate to facilitate development of Models
     generate "annotate:install"
+
+    # Install JQuery
     generate "jquery:install"
+
+    # Install Simple_Form with Bootstrap
     generate "simple_form:install --bootstrap"
+
+    # Pre configure Bootstrap
     generate "layout:install"
+
+    # Use Friendly ID to hide ID field from URLs
     generate "friendly_id"
+
+    # Create Some Static Pages
     generate "controller StaticPages home help about contact"
+
+    # Migrate DB
     rake("db:migrate")
+
+    # Install Devise to manage Users
     generate "devise:install"
+
+    # Add functionality to invite Friends
     generate "devise_invitable:install"
+
+    # Add Necessary views to Users
     generate "devise:views"
+
+    # Install Paypal System on the Project
     generate "paypal:sdk:install"
+
+    # Install Testing utilities
     generate "rspec:install"
+
+    # Create User Table
     generate "devise User"
+
+    # Migrate DB
     rake("db:migrate")
+
+    # Create Guest User
     generate "devise_guests User"
+
+    # Add CanCan to manage Permissions
     generate "cancan:ability"
+
+    # Add Rolify to Add roles to Users
     generate "rolify Role User"
+
+    # Correct FileName Bug of Rolify
     filename = Dir.glob("db/migrate/*rolify_create_roles")[0]
     copy_file File.join(project_path, filename), filename + ".rb"
     remove_file File.join(project_path, filename)
+
+    # Migrate
     rake("db:migrate")
+
+    # Create Invitable User Table
     generate "devise_invitable User"
+
+    # Migrate
     rake("db:migrate")
+
+    # Create Devise Inviting Pages
     generate "devise_invitable:views"
+
+    # Add Testing tools to test Emails
     generate "email_spec:steps"
+
+    # Add slug to user to Hide ID from URLs
     generate "migration add_slug_to_users slug:string:uniq"
+
+    # Add Some data to User (e.g CPF, CreditCard, Etc..)
     generate "migration add_name_to_users name:string cpf:string cnpj:string"
     generate "migration add_provider_to_users provider:boolean"
     generate "migration add_client_to_users client:boolean"
+
+    # Set field default value to False (they are not clients nor providers at the beginning)
     filename = Dir.glob("db/migrate/*add_client_to_users.rb")[0]
     inject_into_file filename,", default: false",after: "boolean"
     filename = Dir.glob("db/migrate/*add_provider_to_users.rb")[0]
     inject_into_file filename,", default: false",after: "boolean"
+
+    # Migrate
     rake("db:migrate")
     
 
+# -------- Configure Redis (cahce service) -------------------
 
-# --------------------------------------------
-    # gsub_file("#$oi/database.yml", "database: Ww_production", "database: "+project_name+"_production")
-    # gsub_file("#$oi/unicorn.rb", "Ww", project_name)
-    # gsub_file("#$oi/unicorn.rb", "root = \"/home/ziongh/railsProjects/current/ww\"", "root = \"#{project_path}\"")
-    # gsub_file("#$oi/unicorn_init.sh", "APP_ROOT=\"/home/ziongh/railsProjects/current/ww\"", "APP_ROOT=\"#{project_path}\"" )
-    # gsub_file("#$oi/secret_token.rb", "Ww::Application.config.secret_key_base = secret_token", project_name+"::Application.config.secret_key_base = secret_token")
-    
-# --------------------------------------------
-    # copy_file "database.yml", "config/database.yml"
-    # gsub_file("config/database.yml", "database: Ww_production", "database: "+project_name+"_production")
     copy_file "redis.rb", "config/initializers/redis.rb"
     copy_file "secret_token.rb", "config/initializers/secret_token.rb"
     gsub_file("config/initializers/secret_token.rb", "Ww::Application.config.secret_key_base = secret_token", project_name+"::Application.config.secret_key_base = secret_token")
     copy_file "secret.yml", "config/secrets.yml"
-    # copy_file "i18n_backend.rb", "config/initializers/i18n_backend.rb"
+    # copy_file "i18n_backend.rb", "config/initializers/i18n_backend.rb" # Add Translation To Redis Server (quite expensive)
+    
+# -------- Install Unicorn (WebServer) -------------------
     copy_file "unicorn.rb", "config/unicorn.rb"
     gsub_file("config/unicorn.rb", "Ww", project_name)
     gsub_file("config/unicorn.rb", "root = \"/home/ziongh/railsProjects/current/ww\"", "root = \"#{project_path}\"")
@@ -179,15 +229,17 @@ class NewGenerator < Rails::Generators::Base
     gsub_file("config/unicorn_init.sh", "APP_ROOT=\"/home/EXAMPLE_USER/railsProjects/current/ww\"", "APP_ROOT=\"#{project_path}\"" )
     gsub_file("config/unicorn_init.sh", "AS_USER=EXAMPLE_USER", "AS_USER=\"#{project_user}\"" )
     
- # --------------------------------------------   
+ # ----------- Configure Pages To use Bootstrap -------------   
     inject_into_file "app/assets/stylesheets/application.css.scss", "\n *= require bootstrap
  *= require chosen", after: "*= require_tree ."
 
- # --------------------------------------------   
+ # ----------- Configure Routes ---------------------------------   
     inject_into_file "config/routes.rb", "  match '/contact', to: 'static_pages#contact' , via: 'get'\n", :after => "Rails.application.routes.draw do\n"
     inject_into_file "config/routes.rb", "  match '/about', to: 'static_pages#about' , via: 'get'\n", :after => "Rails.application.routes.draw do\n"
     inject_into_file "config/routes.rb", "  match '/help', to: 'static_pages#help' , via: 'get'\n", :after => "Rails.application.routes.draw do\n"
     inject_into_file "config/routes.rb", "  root to: \"static_pages#home\"\n", :after => "Rails.application.routes.draw do\n"
+    
+ # ----------- Configure Translations, assets and cache store -----------------------  
     inject_into_file "config/application.rb", "\n  I18n.enforce_available_locales = true\n", :before => "end\nend"
     inject_into_file "config/application.rb", "\n  config.assets.precompile += %w(*.png *.jpg *.jpeg *.gif)\n", :before => "end\nend"
     inject_into_file "config/application.rb", "\n  config.assets.initialize_on_precompile = false\n", :before => "end\nend"
@@ -199,7 +251,7 @@ class NewGenerator < Rails::Generators::Base
       \"production\"  => \"#{project_name}.com\"
     }\n", :before => "end\nend"
 
-# --------------------------------------------
+# ----------- Configure production properties and mailing system (Mandrill) ----------------------
     inject_into_file "config/environments/production.rb", "  config.static_cache_control = \"public, max-age=3600000\"\n", :after => "pplication.configure do\n"
     inject_into_file "config/environments/production.rb", "  config.assets.css_compressor = :yui\n", :after => "pplication.configure do\n"
     gsub_file("config/environments/production.rb",'config.assets.compile = false','config.assets.compile = true')
@@ -226,7 +278,7 @@ class NewGenerator < Rails::Generators::Base
     
 
 
-# --------------------------------------------    
+# ------------- Configure Mailing service for development (testing) -------------------------------    
     inject_into_file "config/environments/development.rb", "\n\n   config.action_mailer.default_url_options = { :host => config.hosts[Rails.env] }
   config.action_mailer.delivery_method = :smtp
   # change to true to allow email to be sent during development
@@ -235,15 +287,12 @@ class NewGenerator < Rails::Generators::Base
   config.action_mailer.default :charset => \"utf-8\"
 \n\n", after: "pplication.configure do\n"
 
-# --------------------------------------------    
-
     inject_into_file "config/environments/test.rb", "# ActionMailer Config
   config.action_mailer.default_url_options = { :host => config.hosts[Rails.env] }
 \n", before: "end"
 
 
-
-# -------------------------------------------- 
+# ------------- Configure HTML Compressor ------------------------------- 
     inject_into_file "config/environments/production.rb", "\n  options = {
     :enabled => true,
     :remove_multi_spaces => true,
@@ -266,11 +315,11 @@ class NewGenerator < Rails::Generators::Base
   }\n
   config.middleware.use HtmlCompressor::Rack, options", :before => "\nend"
 
-# --------------------------------------------
+# ------------- Create Secret for APP -------------------------------
     create_file (".secret")
     prepend_file(".secret", %x[rake secret])
 
-# --------------------------------------------
+# ---------- Configure Simple_form to be fast and compatible ------------------
     # gsub_file("config/initializers/session_store.rb", "Rails.application.config.session_store :cookie_store", "Rails.application.config.session_store :redis_store")
     gsub_file("config/initializers/simple_form.rb", "b.optional :pattern", "#b.optional :pattern")
     gsub_file("config/initializers/simple_form.rb", "# config.collection_wrapper_class = nil", "config.collection_wrapper_class = nil")
@@ -280,10 +329,10 @@ class NewGenerator < Rails::Generators::Base
     gsub_file("config/initializers/simple_form.rb", "# config.input_class = nil", "config.input_class = nil")
     gsub_file("config/initializers/simple_form.rb", "# config.cache_discovery = !Rails.env.development?", "config.cache_discovery = !Rails.env.development?")
 
-# --------------------------------------------
+# ----------- Fix Simple_form Integration with Bootstrap---------------------------------
     inject_into_file "config/initializers/simple_form_bootstrap.rb", "\n    # b.use :pattern\n", after:"b.use :placeholder"
 
-# --------------------------------------------
+# ------------ Change APP Title --------------------------------
     inject_into_file "app/helpers/application_helper.rb", "\n   def title
         base_title = \"#{project_name}\"
         if @title.nil?
@@ -294,7 +343,7 @@ class NewGenerator < Rails::Generators::Base
     end
     ", :after => "module ApplicationHelper"
 
-# --------------------------------------------
+# ------------ Configure Static Pages Title --------------------------------
     inject_into_file "app/controllers/static_pages_controller.rb", "\n    @title = nil\n", after: "def home"
     inject_into_file "app/controllers/static_pages_controller.rb", "\n    @title = \"About\"\n", after: "def about"
     inject_into_file "app/controllers/static_pages_controller.rb", "\n    @title = \"Help\"\n", after: "def help"
@@ -302,7 +351,7 @@ class NewGenerator < Rails::Generators::Base
 
 
 
-# --------------------------------------------
+# ------------- Authenticate Users -------------------------------
     inject_into_file "app/controllers/application_controller.rb", "\n    # before_action :authenticate_user!
     before_action :configure_permitted_parameters, if: :devise_controller?
 
@@ -317,12 +366,12 @@ protected
         devise_parameter_sanitizer.for(:account_update) { |u| u.permit({ roles: [] }, :email, :password, :password_confirmation, :current_password, :name,:cpf, :cnpj, :client, :provider) }
     end\n", after: "protect_from_forgery with: :exception"
 
-# --------------------------------------------
+# ------------- Adds Navigation Bar to WebSite -------------------------------
     copy_file "_navigation.html.erb" , "app/views/layouts/_navigation.html.erb"
     copy_file "_navigation_links.html.erb" , "app/views/layouts/_navigation_links.html.erb"
     copy_file "application.html.erb" , "app/views/layouts/application.html.erb"
 
-# --------------------------------------------
+# ------------- Create Views -------------------------------
     copy_file "about.html.erb" , "app/views/static_pages/about.html.erb"
     copy_file "about.html.erb" , "app/views/static_pages/contact.html.erb"
     copy_file "about.html.erb" , "app/views/static_pages/help.html.erb"
@@ -330,21 +379,23 @@ protected
     gsub_file("app/views/static_pages/contact.html.erb", "<h1>About</h1>", "<h1>Contact</h1>")
     copy_file "home.html.erb" , "app/views/static_pages/home.html.erb"
     
-# --------------------------------------------
+# ------------- Add some Styling to WebSite -------------------------------
 # 
 
     copy_file "docs.css" , "app/assets/stylesheets/docs.css"
     copy_file "custom.js" , "app/assets/javascripts/custom.js"
 
-# -------------------------------------------- 
+# ------------- Configure Friendly ID TO hide ID from URL------------------------------- 
     gsub_file("config/initializers/devise.rb","# config.scoped_views = false","config.scoped_views = true")
     inject_into_file "app/models/user.rb","\nextend FriendlyId
   friendly_id :name, use: :slugged
 ", after: "ActiveRecord::Base"
+
+# ------------- Configure Mail address of Mandrill ------------------------------- 
     gsub_file("config/initializers/devise.rb","# config.mailer_sender = 'please-change-me-at-config-initializers-devise@example.com'","config.mailer_sender = 'info@#{project_name}.com'")
     #inject_into_file "app/models/user.rb","\n    config.mailer_sender = 'info@#{project_name}.com'", after: "ActiveRecord::Base"
 
-# --------------------------------------------
+# ------------- Adds abilities to Users -------------------------------
     
 
 inject_into_file "app/models/ability.rb","\n    user ||= User.new # guest user (not logged in)
@@ -355,7 +406,7 @@ inject_into_file "app/models/ability.rb","\n    user ||= User.new # guest user (
     end
     ", after: "def initialize(user)"
 
-# --------------------------------------------   
+# ------------ Configure Stylesheets --------------------------------   
 
     gsub_file("app/assets/stylesheets/application.css.scss", "*= require_tree .
  *= require bootstrap
@@ -369,13 +420,13 @@ inject_into_file "app/models/ability.rb","\n    user ||= User.new # guest user (
 
     inject_into_file "app/assets/javascripts/application.js", "//= require bootstrap\n", before: "//= require_tree ."
 
-# --------------------------------------------     
+# ------------ Config Database Pass and User to NULL --------------------------------     
 # 
     gsub_file("config/database.yml", "username:", "# username:" )
     gsub_file("config/database.yml", "password:", "# password:" )
 
 
-# --------------------------------------------     
+# ----------- Recreate app in all environments ---------------------------------     
 #    
     rake("db:drop")
     rake("db:schema:cache:clear")
@@ -399,7 +450,6 @@ inject_into_file "app/models/ability.rb","\n    user ||= User.new # guest user (
         run "mkdir ./tmp/pids"
     end
 
-# --------------------------------------------
   end
   
   private
