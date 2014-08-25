@@ -218,6 +218,10 @@ class NewGenerator < Rails::Generators::Base
     copy_file "redis.rb", "config/initializers/redis.rb"
     copy_file "secret_token.rb", "config/initializers/secret_token.rb"
     gsub_file("config/initializers/secret_token.rb", "Ww::Application.config.secret_key_base = secret_token", project_name+"::Application.config.secret_key_base = secret_token")
+    
+    # filename = Dir.glob("config/secrets.yml")[0]
+    # remove_file File.join(project_path, filename)
+
     copy_file "secret.yml", "config/secrets.yml"
     # copy_file "i18n_backend.rb", "config/initializers/i18n_backend.rb" # Add Translation To Redis Server (quite expensive)
     
@@ -316,6 +320,11 @@ class NewGenerator < Rails::Generators::Base
   config.middleware.use HtmlCompressor::Rack, options", :before => "\nend"
 
 # ------------- Create Secret for APP -------------------------------
+
+    # filename = Dir.glob(".secret")[0]
+    # remove_file File.join(project_path, filename)
+
+
     create_file (".secret")
     prepend_file(".secret", %x[rake secret])
 
@@ -367,16 +376,42 @@ protected
     end\n", after: "protect_from_forgery with: :exception"
 
 # ------------- Adds Navigation Bar to WebSite -------------------------------
+
+    # filename = Dir.glob("app/views/layouts/_navigation.html.erb")[0]
+    # remove_file File.join(project_path, filename)
+
     copy_file "_navigation.html.erb" , "app/views/layouts/_navigation.html.erb"
+
+    # filename = Dir.glob("app/views/layouts/_navigation_links.html.erb")[0]
+    # remove_file File.join(project_path, filename)
+
     copy_file "_navigation_links.html.erb" , "app/views/layouts/_navigation_links.html.erb"
+
+    # filename = Dir.glob("app/views/layouts/application.html.erb")[0]
+    # remove_file File.join(project_path, filename)
+
     copy_file "application.html.erb" , "app/views/layouts/application.html.erb"
 
 # ------------- Create Views -------------------------------
+
+    # filename = Dir.glob("app/views/static_pages/about.html.erb")[0]
+    # remove_file File.join(project_path, filename)
+
     copy_file "about.html.erb" , "app/views/static_pages/about.html.erb"
+
+    # filename = Dir.glob("app/views/static_pages/contact.html.erb")[0]
+    # remove_file File.join(project_path, filename)
     copy_file "about.html.erb" , "app/views/static_pages/contact.html.erb"
+
+    # filename = Dir.glob("app/views/static_pages/help.html.erb")[0]
+    # remove_file File.join(project_path, filename)
     copy_file "about.html.erb" , "app/views/static_pages/help.html.erb"
-    gsub_file("app/views/static_pages/help.html.erb", "<h1>About</h1>", "<h1>Help</h1>")
+    
+    gsub_file("app/views/static_pages/help.html.erb", "<h1>About</h1>", "<h1>Help</h1>") 
     gsub_file("app/views/static_pages/contact.html.erb", "<h1>About</h1>", "<h1>Contact</h1>")
+
+    # filename = Dir.glob("app/views/static_pages/home.html.erb")[0]
+    # remove_file File.join(project_path, filename)
     copy_file "home.html.erb" , "app/views/static_pages/home.html.erb"
     
 # ------------- Add some Styling to WebSite -------------------------------
